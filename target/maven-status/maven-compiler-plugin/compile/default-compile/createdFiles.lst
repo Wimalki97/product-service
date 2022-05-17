@@ -1,0 +1,5 @@
+com\mtit\productservice\repository\ProductRepository.class
+com\mtit\productservice\entity\Product.class
+com\mtit\productservice\ProductServiceApplication.class
+com\mtit\productservice\service\ProductService.class
+com\mtit\productservice\controller\ProductController.class
