@@ -12,7 +12,7 @@ on:
 
 
 
-  branches: [master]
+    branches: [master]
 
 
 
