@@ -18,23 +18,23 @@ on:
 
 
 
-#env:
-#
-#
-#
-#PROJECT_ID: ${{ secrets.GCLOUD_PROJECT }}
-#
-#
-#
-#GKE_CLUSTER: product-service
-#
-#
-#
-#GKE_ZONE: us-central1
-#
-#
-#
-#DEPLOYMENT_NAME: product-service
+env:
+
+
+
+PROJECT: ${{ secrets.PROJECT }}
+
+
+
+CLUSTER: product-service
+
+
+
+ZONE: us-central1
+
+
+
+DEPLOYMENT_NAME: product-service
 
 
 
@@ -58,19 +58,18 @@ jobs:
 
 
 
-  # Add "id-token" with the intended permissions.
 
 
 
-#  permissions:
-#
-#
-#
-#    contents: "read"
-#
-#
-#
-#    id-token: "write"
+  permissions:
+
+
+
+    contents: "read"
+
+
+
+    id-token: "write"
 
 
 
@@ -148,92 +147,85 @@ jobs:
 
 
 
-  #    - name: Update config files in k8s
-  #
-  #
-  #
-  #      run: sed -i.bak 's/{{tag}}/${{ github.sha }}/g' k8s/deploy.yaml && rm k8s/*.bak
-  #
-  #
-  #
-  #
-  #
-  #      # Alternative option - authentication via credentials json
-  #
-  #
-  #
-  #    - id: "auth"
-  #
-  #
-  #
-  #      uses: "google-github-actions/auth@v0"
-  #
-  #
-  #
-  #      with:
-  #
-  #
-  #
-  #        credentials_json: "${{ secrets.GCLOUD_CREDENTIALS }}"
-  #
-  #
-  #
-  #
-  #
-  #    # Setup gcloud CLI
-  #
-  #
-  #
-  #    - name: Set up Cloud SDK
-  #
-  #
-  #
-  #      uses: google-github-actions/setup-gcloud@v0
-  #
-  #
-  #
-  #
-  #
-  #    - name: "Use gcloud CLI"
-  #
-  #
-  #
-  #      run: "gcloud info"
-  #
-  #
-  #
-  #
-  #
-  #
-  #
-  #
-  #
-  #    - run: |-
-  #
-  #
-  #
-  #        gcloud container clusters get-credentials "$GKE_CLUSTER" --zone "$GKE_ZONE"
-  #
-  #
-  #
-  #
-  #
-  #
-  #
-  #    - name: Deploy
-  #
-  #
-  #
-  #      run: |-
-  #
-  #
-  #
-  #        kubectl apply -f k8s/deploy.yaml
-  #
-  #
-  #
-  #        kubectl rollout status deployment/$DEPLOYMENT_NAME
-  #
-  #
-  #
-  #        kubectl get services -o wide
+      - name: Update config files in k8s
+
+
+
+        run: sed -i.bak 's/{{tag}}/${{ github.sha }}/g' k8s/deploy.yaml && rm k8s/*.bak
+
+
+
+
+
+
+      - id: "auth"
+
+
+
+        uses: "google-github-actions/auth@v0"
+
+
+
+        with:
+
+
+
+          credentials_json: "${{ secrets.CREDENTIALS }}"
+
+
+
+
+
+      - name: Set up Cloud SDK
+
+
+
+        uses: google-github-actions/setup-gcloud@v0
+
+
+
+
+
+      - name: "Use gcloud CLI"
+
+
+
+        run: "gcloud info"
+
+
+
+
+
+
+
+
+
+      - run: |-
+
+
+
+          gcloud container clusters get-credentials "$CLUSTER" --zone "$ZONE"
+
+
+
+
+
+
+
+      - name: Deploy
+
+
+
+        run: |-
+
+
+
+          kubectl apply -f k8s/deploy.yaml
+
+
+
+          kubectl rollout status deployment/$DEPLOYMENT_NAME
+
+
+
+          kubectl get services -o wide
