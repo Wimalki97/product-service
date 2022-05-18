@@ -15,78 +15,78 @@ jobs:
       ubuntu-latest
 
 
-  permissions:
-    contents: "read"
-    id-token: "write"
+    permissions:
+      contents: "read"
+      id-token: "write"
 
 
 
-  steps:
-    - uses: actions/checkout@v3
-    - name: run shell script
-      run: echo commit hash is ${{ github.sha }}
-    - name: Login to Docker Hub
-      uses: docker/login-action@v1
-      with:
-        username: ${{ secrets.USERNAME }}
-        password: ${{ secrets.TOKEN }}
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag my-image-name:${{ github.sha }}
-    - name: Build and push
-      uses: docker/build-push-action@v2
+    steps:
+      - uses: actions/checkout@v3
+      - name: run shell script
+        run: echo commit hash is ${{ github.sha }}
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.TOKEN }}
+      - name: Build the Docker image
+        run: docker build . --file Dockerfile --tag my-image-name:${{ github.sha }}
+      - name: Build and push
+        uses: docker/build-push-action@v2
 
-      with:
-        context: .
-        file: ./Dockerfile
-        push: true
-        tags: ${{ secrets.USERNAME }}/product-service:${{ github.sha }}
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ${{ secrets.USERNAME }}/product-service:${{ github.sha }}
 
 
 
-    - name: Update config files in k8s
+      - name: Update config files in k8s
 
 
 
-      run: sed -i.bak 's/{{tag}}/${{ github.sha }}/g' k8s/deploy.yaml && rm k8s/*.bak
+        run: sed -i.bak 's/{{tag}}/${{ github.sha }}/g' k8s/deploy.yaml && rm k8s/*.bak
 
 
 
 
 
 
-    - id: "auth"
+      - id: "auth"
 
 
 
-      uses: "google-github-actions/auth@v0"
+        uses: "google-github-actions/auth@v0"
 
 
 
-      with:
+        with:
 
 
 
-        credentials_json: "${{ secrets.CREDENTIALS }}"
+          credentials_json: "${{ secrets.CREDENTIALS }}"
 
 
 
 
 
-    - name: Set up Cloud SDK
+      - name: Set up Cloud SDK
 
 
 
-      uses: google-github-actions/setup-gcloud@v0
+        uses: google-github-actions/setup-gcloud@v0
 
 
 
 
 
-    - name: "Use gcloud CLI"
+      - name: "Use gcloud CLI"
 
 
 
-      run: "gcloud info"
+        run: "gcloud info"
 
 
 
@@ -96,32 +96,32 @@ jobs:
 
 
 
-    - run: |-
+      - run: |-
+  
+  
+  
+          gcloud container clusters get-credentials "$CLUSTER" --zone "$ZONE"
+  
+  
+  
+  
+  
+  
 
+      - name: Deploy
 
 
-        gcloud container clusters get-credentials "$CLUSTER" --zone "$ZONE"
 
-
-
-
-
-
-
-    - name: Deploy
-
-
-
-      run: |-
-
-
-
-        kubectl apply -f k8s/deploy.yaml
-
-
-
-        kubectl rollout status deployment/$DEPLOYMENT_NAME
-
-
-
-        kubectl get services -o wide
+        run: |-
+  
+  
+  
+          kubectl apply -f k8s/deploy.yaml
+  
+  
+  
+          kubectl rollout status deployment/$DEPLOYMENT_NAME
+  
+  
+  
+          kubectl get services -o wide
