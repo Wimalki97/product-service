@@ -4,10 +4,10 @@ on:
     branches: [master]
 
 env:
-PROJECT: ${{ secrets.PROJECT }}
-CLUSTER: product-service
-ZONE: us-central1
-DEPLOYMENT_NAME: product-service
+  PROJECT: ${{ secrets.PROJECT }}
+  CLUSTER: product-service
+  ZONE: us-central1
+  DEPLOYMENT_NAME: product-service
 
 jobs:
   build:
